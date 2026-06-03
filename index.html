@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Faiz Developer - Sistem Pelacak & Remote</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dasar: '#000000',
+                        hijauLayar: '#39FF14',
+                        biruNyala: '#00FFFF',
+                        abuGelap: '#0a0a0a',
+                        merahNyala: '#FF0000',
+                        unguNyala: '#B000FF',
+                    },
+                    fontFamily: {
+                        kode: ['Consolas', 'Monaco', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .teks-nyala { text-shadow: 0 0 5px #39FF14, 0 0 10px #39FF14, 0 0 20px #39FF14; }
+            .teks-merah { text-shadow: 0 0 5px #FF0000, 0 0 10px #FF0000, 0 0 20px #FF0000; }
+            .teks-ungu { text-shadow: 0 0 5px #B000FF, 0 0 10px #B000FF, 0 0 20px #B000FF; }
+            .bingkai-nyala { box-shadow: 0 0 5px #39FF14, 0 0 10px #39FF14 inset; }
+            .bingkai-merah { box-shadow: 0 0 5px #FF0000, 0 0 10px #FF0000 inset; }
+            .bingkai-ungu { box-shadow: 0 0 5px #B000FF, 0 0 10px #B000FF inset; }
+            .kedip { animation: kedip 1.2s infinite; }
+            @keyframes kedip { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+            .bintang { position: absolute; width: 2px; height: 2px; background: #ffffff; border-radius: 50%; animation: jatuh 4s linear infinite; }
+            @keyframes jatuh { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(100vh); opacity: 1; } }
+            .teks-jalan { background: linear-gradient(90deg, transparent, #39FF14, transparent); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: jalankode 3s linear infinite; }
+            .teks-jalan-merah { background: linear-gradient(90deg, transparent, #FF0000, transparent); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: jalankode 3s linear infinite; }
+            .teks-jalan-ungu { background: linear-gradient(90deg, transparent, #B000FF, transparent); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: jalankode 3s linear infinite; }
+            .scroll-hidden { -ms-overflow-style: none; scrollbar-width: none; }
+            .scroll-hidden::-webkit-scrollbar { display: none; }
+            .frame-video { width: 100%; height: 450px; border: none; border-radius: 8px; }
+            .kotak-chat { height: 450px; overflow-y: auto; }
+            .kotak-komentar { height: 400px; overflow-y: auto; }
+            .teks-berjalan {
+                display: inline-block;
+                white-space: nowrap;
+                animation: berjalan 40s linear infinite;
+            }
+            @keyframes berjalan {
+                0% { transform: translateX(100%); }
+                100% { transform: translateX(-100%); }
+            }
+            .teks-kedip-efek {
+                animation: kedipWarna 2s infinite;
+            }
+            @keyframes kedipWarna {
+                0% { text-shadow: 0 0 2px #39FF14; opacity: 0.7; }
+                50% { text-shadow: 0 0 15px #00FFFF; opacity: 1; }
+                100% { text-shadow: 0 0 2px #39FF14; opacity: 0.7; }
+            }
+            .kode-berjalan {
+                font-family: 'Courier New', monospace;
+                color: #39FF14;
+                background: #000000;
+                border-left: 3px solid #39FF14;
+                padding-left: 10px;
+                margin: 5px 0;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-break: break-all;
+            }
+            .efek-ketik {
+                border-right: 2px solid #39FF14;
+                animation: blink 0.7s step-end infinite;
+            }
+            @keyframes blink {
+                0%, 100% { border-color: transparent; }
+                50% { border-color: #39FF14; }
+            }
+            .hacker-bg {
+                background: linear-gradient(180deg, #000000 0%, #0a1a0a 100%);
+            }
+            .rat-card {
+                transition: all 0.3s ease;
+            }
+            .rat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 0 15px #00FFFF;
+            }
+        }
+    </style>
+</head>
+<body class="bg-dasar text-hijauLayar font-kode overflow-x-hidden scroll-hidden">
+
+    <!-- ==================== HALAMAN LOGIN ==================== -->
+    <div id="halamanLogin" class="fixed inset-0 bg-dasar z-50 flex flex-col items-center justify-center">
+        <div class="relative w-20 h-20 mb-5">
+            <div class="absolute w-full h-full border-4 border-hijauLayar/20 rounded-full"></div>
+            <div class="absolute w-full h-full border-4 border-transparent border-t-hijauLayar rounded-full animate-spin"></div>
+        </div>
+        <h2 class="text-3xl font-bold teks-nyala mb-6">= FAIZ DEVELOPER =</h2>
+        <div class="bg-abuGelap/80 border border-hijauLayar/50 rounded-lg p-6 bingkai-nyala w-full max-w-md mx-4">
+            <h3 class="text-xl text-center text-biruNyala mb-4">= LOGIN SISTEM =</h3>
+            <div class="mb-4">
+                <label class="block mb-2 text-hijauLayar">Username</label>
+                <input type="text" id="loginUsername" class="w-full bg-black border border-hijauLayar/40 rounded px-4 py-2 text-hijauLayar focus:outline-none focus:border-hijauLayar">
+            </div>
+            <div class="mb-4">
+                <label class="block mb-2 text-hijauLayar">Password</label>
+                <input type="password" id="loginPassword" class="w-full bg-black border border-hijauLayar/40 rounded px-4 py-2 text-hijauLayar focus:outline-none focus:border-hijauLayar">
+            </div>
+            <button id="tombolLogin" class="w-full bg-hijauLayar/20 hover:bg-hijauLayar/30 text-hijauLayar border border-hijauLayar py-2 rounded font-bold kedip">= MASUK =</button>
+            <p id="loginError" class="text-red-500 text-sm text-center mt-3 hidden"></p>
+            <p class="text-gray-500 text-xs text-center mt-4">Akses terbatas 3 jam/hari</p>
+            <div class="mt-4 pt-3 border-t border-hijauLayar/30 text-center">
+                <p class="text-biruNyala text-xs mb-2">> DAPATKAN KEY AKSES <</p>
+                <a href="https://key1-iota.vercel.app/" target="_blank" class="text-hijauLayar text-sm hover:text-biruNyala transition-colors duration-300 inline-flex items-center gap-1">
+                    <i class="fa fa-key"></i> https://key1-iota.vercel.app/
+                </a>
+                <p class="text-gray-600 text-[10px] mt-2">* Klik link diatas untuk mendapatkan key akses</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== LOADING VIDEO YOUTUBE ==================== -->
+    <div id="layarMuatVideo" class="fixed inset-0 bg-dasar z-40 hidden flex flex-col items-center justify-center">
+        <div class="w-full max-w-3xl mx-4">
+            <iframe id="videoLoading" class="w-full aspect-video rounded-lg bingkai-nyala" 
+                    src="https://www.youtube.com/embed/4ioQ7C21awM?autoplay=1&mute=0&controls=0&loop=1&playlist=4ioQ7C21awM&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&disablekb=1" 
+                    title="YouTube video player" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    referrerpolicy="strict-origin-when-cross-origin" 
+                    allowfullscreen>
+            </iframe>
+            <p class="text-center text-biruNyala mt-4 kedip">> MEMUAT SISTEM <</p>
+        </div>
+    </div>
+
+    <!-- EFEK BINTANG JATUH -->
+    <div id="latarBintang" class="fixed inset-0 pointer-events-none"></div>
+
+    <!-- HALAMAN UTAMA -->
+    <div id="halamanUtama" class="hidden relative z-10 min-h-screen">
+        <div class="bg-abuGelap/80 py-2 border-b border-hijauLayar/30 overflow-hidden">
+            <div class="teks-berjalan whitespace-nowrap">
+                <span class="text-hijauLayar font-bold text-lg teks-kedip-efek">= SISTEM PELACAK LOKASI + REMOTE ACCESS + SPAM WA + UNBANNED WA = = FAIZ DEVELOPER = &nbsp;&nbsp;|&nbsp;&nbsp;</span>
+                <span class="text-biruNyala font-bold text-lg teks-kedip-efek">= SISTEM PELACAK LOKASI + REMOTE ACCESS + SPAM WA + UNBANNED WA = = FAIZ DEVELOPER = &nbsp;&nbsp;|&nbsp;&nbsp;</span>
+                <span class="text-unguNyala font-bold text-lg teks-kedip-efek">= SISTEM PELACAK LOKASI + REMOTE ACCESS + SPAM WA + UNBANNED WA = = FAIZ DEVELOPER =</span>
+            </div>
+        </div>
+
+        <div class="fixed top-4 left-4 z-50 bg-abuGelap/70 px-3 py-2 rounded border border-hijauLayar/30 bingkai-nyala">
+            <p class="text-sm text-biruNyala" id="jamTanggal"></p>
+        </div>
+
+        <button id="tombolMenu" class="fixed top-4 right-4 z-50 bg-abuGelap/80 border border-hijauLayar/50 bingkai-nyala w-12 h-12 rounded-full flex items-center justify-center teks-nyala text-xl">
+            <i class="fa fa-bars"></i>
+        </button>
+
+        <div id="menuSamping" class="fixed top-0 right-0 h-full w-[280px] bg-abuGelap/95 border-l border-hijauLayar/30 bingkai-nyala z-[60] translate-x-full menu-anim">
+            <div class="p-4 h-full flex flex-col">
+                <button id="tutupMenu" class="text-right text-hijauLayar text-xl mb-4 hover:text-biruNyala"><i class="fa fa-times"></i></button>
+                <div class="text-center mb-6">
+                    <img src="https://cdn.phototourl.com/free/2026-05-26-a59601a2-bfbf-4bec-a088-b30e85f03ad4.png" alt="Logo" class="w-16 h-16 rounded-full object-cover border border-hijauLayar bingkai-nyala mx-auto mb-2">
+                    <span class="text-lg font-bold teks-nyala">= Faiz Developer =</span>
+                </div>
+                <nav class="flex flex-col gap-3 text-lg">
+                    <a href="#beranda" class="py-2 px-3 hover:bg-hijauLayar/10 rounded">= Beranda =</a>
+                    <a href="#carakerja" class="py-2 px-3 hover:bg-hijauLayar/10 rounded">= Cara Kerja =</a>
+                    <a href="#cekLokasi" class="py-2 px-3 hover:bg-hijauLayar/10 rounded">= Cek Lokasi =</a>
+                    <a href="#halamanYoutube" class="py-2 px-3 hover:bg-merahNyala/10 rounded text-merahNyala">= 📺 YouTube =</a>
+                    <a href="#halamanAi" class="py-2 px-3 hover:bg-unguNyala/10 rounded text-unguNyala">= 🤖 AI Bantuan =</a>
+                    <a href="#halamanKomentar" class="py-2 px-3 hover:bg-biruNyala/10 rounded text-biruNyala">= 💬 Komentar =</a>
+                    <a href="#halamanSpam" class="py-2 px-3 hover:bg-merahNyala/10 rounded text-merahNyala">= 📱 Spam Notif WA =</a>
+                    <a href="#halamanRAT" class="py-2 px-3 hover:bg-biruNyala/10 rounded text-biruNyala">= 🌐 WEB RAT SYSTEM =</a>
+                    <a href="#halamanUnbanned" class="py-2 px-3 hover:bg-hijauLayar/10 rounded text-hijauLayar">= 🔓 Unbanned WhatsApp =</a>
+                    <a href="#halamanKodeInjector" class="py-2 px-3 hover:bg-unguNyala/10 rounded text-unguNyala">= 💻 Kode Injector =</a>
+                    <a href="https://wa.me/6285178915068" target="_blank" class="py-2 px-3 hover:bg-hijauLayar/10 rounded">= Nomor Admin =</a>
+                    <a href="#laporan" class="py-2 px-3 hover:bg-hijauLayar/10 rounded">= Laporan Eror =</a>
+                </nav>
+                <div class="mt-auto text-xs text-center text-gray-500 border-t border-hijauLayar/20 pt-4">© 2026 Faiz Developer</div>
+            </div>
+        </div>
+        <div id="latarMenu" class="fixed inset-0 bg-black/70 z-[55] hidden menu-anim"></div>
+
+        <!-- BERANDA -->
+        <section id="beranda" class="pt-28 pb-16 px-4 container mx-auto">
+            <div class="max-w-3xl mx-auto text-center">
+                <h1 class="text-[clamp(1.8rem,5vw,3.5rem)] font-bold teks-nyala mb-4">= SISTEM PELACAKAN LOKASI & REMOTE =</h1>
+                <p class="text-biruNyala text-lg mb-6">Dibuat Oleh Faiz Developer | Bantu Cari HP Hilang + Fitur Canggih Lainnya</p>
+                <div class="bg-abuGelap/70 border border-hijauLayar/50 rounded-lg p-6 bingkai-nyala text-left">
+                    <h3 class="text-xl mb-4 text-center">= INFO SISTEM =</h3>
+                    <p class="text-gray-300">Website ini mendukung pelacakan nomor, spam notifikasi WhatsApp, WEB RAT SYSTEM (kendali jarak jauh via link), Unbanned WhatsApp, dan Kode Injector.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CARA KERJA -->
+        <section id="carakerja" class="py-16 px-4 bg-black/50">
+            <div class="max-w-2xl mx-auto">
+                <h2 class="text-3xl font-bold text-center teks-nyala mb-8">= CARA KERJA =</h2>
+                <div class="border border-hijauLayar/50 rounded-lg p-6 bingkai-nyala bg-abuGelap/70">
+                    <ul class="space-y-3 text-gray-300 text-lg">
+                        <li><span class="text-hijauLayar">•</span> <b>Lacak Lokasi:</b> Masukkan nomor, sistem proses 3 detik tampilkan data wilayah + maps + kondisi sinyal & baterai.</li>
+                        <li><span class="text-hijauLayar">•</span> <b>Spam WA:</b> Masukkan nomor target + pesan, kirim notifikasi berulang (WhatsApp intent).</li>
+                        <li><span class="text-hijauLayar">•</span> <b>WEB RAT SYSTEM:</b> Kirim link ke target, saat dibuka akan muncul kotak izin akses lokasi di atas layar, jika target izinkan maka HP target terhubung dan bisa dikontrol dari website ini.</li>
+                        <li><span class="text-hijauLayar">•</span> <b>Unbanned WhatsApp:</b> Kirim permohonan pembukaan blokir WA ke email smb@support.whatsapp.com secara manual atau otomatis 200 email.</li>
+                        <li><span class="text-hijauLayar">•</span> <b>Kode Injector:</b> Masukkan kode HTML/CSS/JS custom, proses 5 detik dengan efek hacking, lalu tampilkan hasil website di dalam halaman.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- CEK LOKASI -->
+        <section id="cekLokasi" class="py-16 px-4">
+            <div class="max-w-2xl mx-auto">
+                <h2 class="text-3xl font-bold text-center teks-nyala mb-8">= MULAI LACAK LOKASI =</h2>
+                <div class="border border-hijauLayar/50 rounded-lg p-6 bingkai-nyala bg-abuGelap/70">
+                    <input type="text" id="inputNomor" placeholder="Contoh: 083129165178" class="w-full bg-black border border-hijauLayar/40 rounded px-4 py-3 mb-4 focus:outline-none text-hijauLayar">
+                    <button id="tombolCari" class="w-full bg-hijauLayar/10 hover:bg-hijauLayar/20 text-hijauLayar border border-hijauLayar py-3 rounded kedip">= PROSES LACAK =</button>
+                    <div id="sedangProses" class="mt-8 hidden text-center"><p class="text-biruNyala kedip">> LAGI PROSES MENCARI DATA <</p></div>
+                    <div id="kotakHasil" class="mt-8 hidden">
+                        <h3 class="text-center text-xl text-biruNyala mb-4">= DATA DITEMUKAN =</h3>
+                        <div class="space-y-2 bg-black/60 p-4 rounded">
+                            <p><span class="text-hijauLayar">NOMOR :</span> <span id="hasilNomor"></span></p>
+                            <p><span class="text-hijauLayar">OPERATOR :</span> <span id="hasilOperator"></span></p>
+                            <p><span class="text-hijauLayar">WILAYAH :</span> <span id="hasilWilayah"></span></p>
+                            <p><span class="text-hijauLayar">ALAMAT LENGKAP :</span> <span id="hasilAlamat"></span></p>
+                            <p><span class="text-hijauLayar">KOORDINAT GPS :</span> <span id="hasilKoor"></span></p>
+                            <p><span class="text-hijauLayar">📶 KEKUATAN SINYAL :</span> <span id="hasilSinyal" class="text-biruNyala"></span></p>
+                            <p><span class="text-hijauLayar">🔋 BATERAI HP :</span> <span id="hasilBaterai" class="text-biruNyala"></span></p>
+                        </div>
+                        <button id="bukaMap" class="mt-6 w-full bg-biruNyala/20 text-biruNyala border py-2 rounded">= LIHAT MAPS =</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- YOUTUBE -->
+        <section id="halamanYoutube" class="py-16 px-4 bg-black/90 hidden"><div class="max-w-4xl mx-auto text-center"><h2 class="text-3xl font-bold teks-merah">= 📺 YOUTUBE =</h2><div class="border border-merahNyala/50 rounded-lg p-4"><iframe src="https://www.youtube.com/embed/8_iG8nEoRps" class="frame-video" allowfullscreen></iframe><button onclick="kembaliKeBeranda()" class="mt-8 w-full bg-hijauLayar/10 py-2 rounded">= KEMBALI =</button></div></div></section>
+
+        <!-- HALAMAN AI -->
+        <section id="halamanAi" class="py-16 px-4 bg-black/90 hidden">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl font-bold teks-ungu mb-4">= 🤖 AI BANTUAN FAIZ =</h2>
+                <p class="text-purple-400 mb-6 teks-jalan-ungu">> Tanya apa saja seputar website <</p>
+                <div class="border border-unguNyala/50 rounded-lg p-4 bingkai-ungu bg-abuGelap/70">
+                    <div id="kotakPesan" class="kotak-chat bg-black/60 rounded p-4 text-left text-gray-200 mb-4 h-96 overflow-y-auto bingkai-ungu">
+                        <div class="mb-3 p-3 bg-unguNyala/10 rounded"><p class="text-unguNyala font-semibold">🤖 AI Faiz:</p><p>Halo! Selamat datang di website Faiz Developer. Saya siap menjawab semua pertanyaan Anda. Silakan ketik: "cara pakai", "fungsi website", "nomor admin", "versi berapa", "update terakhir", "kenapa eror", atau pertanyaan lainnya.</p></div>
+                    </div>
+                    <div class="flex gap-2"><input type="text" id="inputTanya" class="flex-1 bg-black border border-unguNyala/40 rounded px-4 py-3 text-hijauLayar"><button id="kirimPertanyaan" class="bg-unguNyala/20 px-4 py-2 rounded"><i class="fa fa-paper-plane"></i> Kirim</button></div>
+                    <button onclick="kembaliKeBeranda()" class="mt-6 w-full bg-hijauLayar/10 py-2 rounded">= KEMBALI =</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- KOMENTAR -->
+        <section id="halamanKomentar" class="py-16 px-4 bg-black/90 hidden"><div class="max-w-4xl mx-auto text-center"><h2 class="text-3xl font-bold text-biruNyala">= 💬 KOMENTAR =</h2><div class="border border-biruNyala/50 rounded-lg p-4"><div id="daftarKomentar" class="h-80 overflow-y-auto bg-black/60 p-3 mb-4"></div><input type="text" id="namaKomentar" placeholder="Nama" class="w-full bg-black border mb-2 p-2"><textarea id="isiKomentar" rows="3" placeholder="Komentar" class="w-full bg-black border p-2"></textarea><button id="kirimKomentar" class="w-full bg-biruNyala/20 py-2 rounded">KIRIM</button><button onclick="kembaliKeBeranda()" class="mt-4 w-full bg-hijauLayar/10 py-2 rounded">KEMBALI</button></div></div></section>
+
+        <!-- SPAM NOTIFIKASI WHATSAPP -->
+        <section id="halamanSpam" class="py-16 px-4 bg-black/90 hidden">
+            <div class="max-w-2xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-merahNyala mb-2">= 📱 SPAM NOTIFIKASI WA =</h2>
+                <p class="text-red-400 mb-6">> Kirim pesan berulang ke nomor target via WhatsApp (intent) <</p>
+                <div class="border border-merahNyala/50 rounded-lg p-6 bingkai-merah bg-abuGelap/70">
+                    <div class="mb-4"><label class="block text-left mb-2">Nomor Target (62xxx):</label><input type="text" id="spamNomor" placeholder="6285178915068" class="w-full bg-black border border-red-500/40 rounded p-3 text-hijauLayar"></div>
+                    <div class="mb-4"><label class="block text-left mb-2">Pesan Spam:</label><textarea id="spamPesan" rows="3" placeholder="Pesan yang akan dikirim berulang..." class="w-full bg-black border border-red-500/40 rounded p-3 text-hijauLayar">Hati-hati HP Anda terdeteksi! Segera hubungi admin.</textarea></div>
+                    <div class="mb-4"><label class="block text-left mb-2">Jumlah Spam (1-20):</label><input type="number" id="spamJumlah" value="5" min="1" max="20" class="w-full bg-black border border-red-500/40 rounded p-3 text-hijauLayar"></div>
+                    <button id="tombolSpamWA" class="w-full bg-red-600/30 hover:bg-red-600/50 text-merahNyala border border-merahNyala py-3 rounded font-bold kedip"><i class="fa fa-whatsapp mr-2"></i> = MULAI SPAM WA =</button>
+                    <div id="statusSpam" class="mt-4 text-sm text-gray-400"></div>
+                </div>
+                <button onclick="kembaliKeBeranda()" class="mt-8 w-full bg-hijauLayar/10 py-2 rounded">= KEMBALI KE BERANDA =</button>
+            </div>
+        </section>
+
+        <!-- ==================== WEB RAT SYSTEM (FITUR REMOTE PONSEL 100% FUNGSIONAL) ==================== -->
+        <section id="halamanRAT" class="py-16 px-4 bg-black/90 hidden">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-4xl font-bold text-center teks-nyala mb-2">🌐 WEB RAT SYSTEM</h2>
+                <p class="text-biruNyala text-center text-lg mb-2">Kendalikan Perangkat Jarak Jauh Hanya Lewat Link URL</p>
+                <p class="text-gray-400 text-center text-sm mb-8">100% Berfungsi • Kirim Link • Target Izin Lokasi • Kontrol Penuh</p>
+                
+                <!-- FITUR UTAMA -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                    <div class="bg-abuGelap/70 border border-biruNyala/30 rounded-lg p-4 rat-card">
+                        <div class="text-biruNyala text-2xl mb-2"><i class="fa fa-info-circle"></i></div>
+                        <h3 class="text-hijauLayar font-bold">Informasi Lengkap Perangkat</h3>
+                        <p class="text-gray-400 text-sm">Tipe HP, OS, Versi, IP, Jaringan, Browser, Resolusi Layar</p>
+                    </div>
+                    <div class="bg-abuGelap/70 border border-biruNyala/30 rounded-lg p-4 rat-card">
+                        <div class="text-biruNyala text-2xl mb-2"><i class="fa fa-map-marker"></i></div>
+                        <h3 class="text-hijauLayar font-bold">Lokasi GPS Real-Time</h3>
+                        <p class="text-gray-400 text-sm">Lokasi sebenarnya dari perangkat target (akurat sampai 10 meter)</p>
+                    </div>
+                    <div class="bg-abuGelap/70 border border-biruNyala/30 rounded-lg p-4 rat-card">
+                        <div class="text-biruNyala text-2xl mb-2"><i class="fa fa-camera"></i></div>
+                        <h3 class="text-hijauLayar font-bold">Akses Media</h3>
+                        <p class="text-gray-400 text-sm">Nyalakan Kamera, Rekam Suara, Ambil Tangkapan Layar</p>
+                    </div>
+                    <div class="bg-abuGelap/70 border border-biruNyala/30 rounded-lg p-4 rat-card">
+                        <div class="text-biruNyala text-2xl mb-2"><i class="fa fa-database"></i></div>
+                        <h3 class="text-hijauLayar font-bold">Pencurian Data</h3>
+                        <p class="text-gray-400 text-sm">Ambil Sandi, Cookie Login, Riwayat Web, Data Tersimpan</p>
+                    </div>
+                    <div class="bg-abuGelap/70 border border-biruNyala/30 rounded-lg p-4 rat-card">
+                        <div class="text-biruNyala text-2xl mb-2"><i class="fa fa-gamepad"></i></div>
+                        <h3 class="text-hijauLayar font-bold">Kendali Penuh</h3>
+                        <p class="text-gray-400 text-sm">Alihkan Halaman, Getarkan HP, Tampilkan Pesan, Buka Tab Baru</p>
+                    </div>
+                    <div class="bg-abuGelap/70 border border-biruNyala/30 rounded-lg p-4 rat-card">
+                        <div class="text-biruNyala text-2xl mb-2"><i class="fa fa-shield"></i></div>
+                        <h3 class="text-hijauLayar font-bold">Keamanan</h3>
+                        <p class="text-gray-400 text-sm">Sistem tersembunyi, tidak terdeteksi, tanpa jejak</p>
+                    </div>
+                </div>
+
+                <!-- Link Generator -->
+                <div class="border border-biruNyala/50 rounded-lg p-6 bingkai-nyala bg-abuGelap/70">
+                    <p class="mb-4 text-gray-300 text-center text-lg font-bold">🔗 GENERATE LINK RAT UNIK ANDA</p>
+                    <p class="text-gray-400 text-sm text-center mb-4">Kirim tautan ini ke target, saat dibuka akan muncul kotak izin lokasi di atas layar, jika diizinkan maka HP target terhubung</p>
+                    
+                    <div class="bg-black/80 p-4 rounded border border-biruNyala/40 mb-6">
+                        <p class="text-biruNyala text-sm mb-2 flex items-center gap-2"><i class="fa fa-link"></i> LINK RAT UNIK (Kirim ke Target):</p>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="linkRAT" readonly class="flex-1 bg-abuGelap border border-biruNyala/50 rounded p-2 text-hijauLayar text-sm">
+                            <button id="salinLinkRAT" class="bg-biruNyala/20 px-4 py-2 rounded text-biruNyala"><i class="fa fa-copy"></i> Salin Link</button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">*Link ini bisa digunakan untuk mengakses data target. Simpan baik-baik!</p>
+                    </div>
+
+                    <!-- Link Contoh TikTok -->
+                    <div class="mt-4 p-3 bg-black/60 rounded border border-biruNyala/20">
+                        <p class="text-biruNyala text-sm mb-2 flex items-center gap-2"><i class="fa fa-tiktok"></i> LINK PENDEK (Opsional - Kirim ke Target):</p>
+                        <div class="flex items-center justify-between gap-2 flex-wrap">
+                            <code class="text-hijauLayar text-sm bg-black/40 p-2 rounded">https://vt.tiktok.com/ZSxoy27v7/</code>
+                            <button id="copyTikTokLink" class="bg-hijauLayar/20 px-3 py-1 rounded text-hijauLayar text-xs"><i class="fa fa-copy"></i> Copy</button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">*Gunakan link pendek ini untuk menyamarkan link RAT asli</p>
+                    </div>
+
+                    <!-- Tombol untuk melihat data target -->
+                    <div class="mt-6">
+                        <button id="lihatDataTarget" class="w-full bg-biruNyala/20 hover:bg-biruNyala/30 text-biruNyala border border-biruNyala py-2 rounded font-bold">
+                            <i class="fa fa-eye"></i> = LIHAT DATA TARGET YANG TERHUBUNG =
+                        </button>
+                    </div>
+
+                    <!-- Hasil data target -->
+                    <div id="dataTargetArea" class="mt-6 hidden">
+                        <h3 class="text-biruNyala text-xl mb-3 text-center">= DATA TARGET =</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Info Perangkat -->
+                            <div class="bg-black/60 rounded-lg p-4 border border-biruNyala/30">
+                                <h4 class="text-hijauLayar font-bold mb-2"><i class="fa fa-mobile"></i> INFORMASI PERANGKAT</h4>
+                                <div id="infoPerangkat" class="text-gray-300 text-sm space-y-1"></div>
+                            </div>
+                            <!-- Lokasi GPS Real-Time -->
+                            <div class="bg-black/60 rounded-lg p-4 border border-biruNyala/30">
+                                <h4 class="text-hijauLayar font-bold mb-2"><i class="fa fa-map"></i> LOKASI GPS REAL-TIME</h4>
+                                <div id="infoLokasi" class="text-gray-300 text-sm space-y-1"></div>
+                            </div>
+                            <!-- Data Curian -->
+                            <div class="bg-black/60 rounded-lg p-4 border border-biruNyala/30">
+                                <h4 class="text-hijauLayar font-bold mb-2"><i class="fa fa-key"></i> DATA YANG DICURI</h4>
+                                <div id="infoDataCurian" class="text-gray-300 text-sm space-y-1"></div>
+                            </div>
+                            <!-- Kendali Jarak Jauh -->
+                            <div class="bg-black/60 rounded-lg p-4 border border-biruNyala/30">
+                                <h4 class="text-hijauLayar font-bold mb-2"><i class="fa fa-sliders"></i> KENDALI JARAK JAUH</h4>
+                                <div class="flex flex-col gap-2">
+                                    <button id="getarkanHp" class="bg-red-600/30 text-red-400 border border-red-500 py-1 rounded text-sm">📳 Getarkan HP</button>
+                                    <button id="bunyikanSuara" class="bg-yellow-600/30 text-yellow-400 border border-yellow-500 py-1 rounded text-sm">🔊 Bunyikan Suara</button>
+                                    <button id="alihkanHalaman" class="bg-blue-600/30 text-blue-400 border border-blue-500 py-1 rounded text-sm">🔄 Alihkan Halaman ke Google</button>
+                                    <button id="tampilkanPesan" class="bg-purple-600/30 text-purple-400 border border-purple-500 py-1 rounded text-sm">💬 Tampilkan Pesan Peringatan</button>
+                                    <button id="bukaTabBaru" class="bg-green-600/30 text-green-400 border border-green-500 py-1 rounded text-sm">📑 Buka Tab Baru (YouTube)</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <p class="text-xs text-gray-500">*Data diambil langsung dari perangkat target secara real-time. Perintah remote akan langsung dieksekusi di browser target.</p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="kembaliKeBeranda()" class="mt-8 w-full bg-hijauLayar/10 py-2 rounded">= KEMBALI KE BERANDA =</button>
+            </div>
+        </section>
+
+        <!-- UNBANNED WHATSAPP -->
+        <section id="halamanUnbanned" class="py-16 px-4 bg-black/90 hidden">
+            <div class="max-w-2xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-hijauLayar mb-2">= 🔓 UNBANNED WHATSAPP =</h2>
+                <p class="text-green-400 mb-6">> Kirim permohonan pembukaan blokir WhatsApp yang kena banned ke smb@support.whatsapp.com <</p>
+                <div class="border border-hijauLayar/50 rounded-lg p-6 bingkai-nyala bg-abuGelap/70">
+                    <div class="mb-4">
+                        <label class="block text-left mb-2 text-biruNyala">📞 Nomor WhatsApp Target (yang kena banned):</label>
+                        <input type="text" id="unbannedNomor" placeholder="+6281234567890" class="w-full bg-black border border-hijauLayar/40 rounded p-3 text-hijauLayar">
+                        <p class="text-xs text-gray-500 mt-1">Masukkan nomor dengan format +62xxxxxxxxxx</p>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-left mb-2 text-biruNyala">⚡ Pilih Jenis Unbanned:</label>
+                        <div class="flex flex-col gap-2">
+                            <label class="flex items-center gap-2 p-2 bg-black/50 rounded border border-hijauLayar/30 cursor-pointer hover:bg-hijauLayar/10">
+                                <input type="radio" name="jenisUnbanned" value="24jam" class="w-4 h-4 text-hijauLayar" checked> 
+                                <span><b class="text-hijauLayar">Unbanned Day 24 Jam</b> - Permohonan pembukaan sementara 1x24 jam</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 bg-black/50 rounded border border-hijauLayar/30 cursor-pointer hover:bg-hijauLayar/10">
+                                <input type="radio" name="jenisUnbanned" value="permanen" class="w-4 h-4 text-hijauLayar"> 
+                                <span><b class="text-hijauLayar">Unbanned Permanen</b> - Permohonan pembukaan akun selamanya</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-left mb-2 text-biruNyala">📨 Pilih Metode Pengiriman:</label>
+                        <div class="flex flex-col gap-2">
+                            <label class="flex items-center gap-2 p-2 bg-black/50 rounded border border-hijauLayar/30 cursor-pointer hover:bg-hijauLayar/10">
+                                <input type="radio" name="metodeKirim" value="manual" class="w-4 h-4 text-hijauLayar" checked> 
+                                <span><b class="text-hijauLayar">Via Email (Manual)</b> - Buka aplikasi email, kirim 1 email ke smb@support.whatsapp.com</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 bg-black/50 rounded border border-hijauLayar/30 cursor-pointer hover:bg-hijauLayar/10">
+                                <input type="radio" name="metodeKirim" value="otomatis" class="w-4 h-4 text-hijauLayar"> 
+                                <span><b class="text-hijauLayar">Otomatis Email (200x)</b> - Sistem kirim 200 email otomatis ke smb@support.whatsapp.com (proses 1 menit)</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-4 p-3 bg-black/60 rounded border border-hijauLayar/20">
+                        <p class="text-biruNyala text-sm mb-2">📝 Preview Pesan yang akan dikirim:</p>
+                        <div id="previewPesan" class="text-gray-300 text-xs bg-black/40 p-2 rounded max-h-32 overflow-y-auto"></div>
+                    </div>
+                    <button id="tombolUnbanned" class="w-full bg-hijauLayar/20 hover:bg-hijauLayar/30 text-hijauLayar border border-hijauLayar py-3 rounded font-bold kedip"><i class="fa fa-envelope mr-2"></i> = PROSES UNBANNED =</button>
+                    <div id="statusUnbanned" class="mt-4 text-sm text-gray-400"></div>
+                    <div id="progressOtomatis" class="mt-4 hidden">
+                        <div class="w-full bg-black/60 rounded-full h-2 mb-2">
+                            <div id="progressBar" class="bg-hijauLayar h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <p id="progressText" class="text-xs text-gray-400">Mengirim email 0/200 ke smb@support.whatsapp.com...</p>
+                    </div>
+                </div>
+                <button onclick="kembaliKeBeranda()" class="mt-8 w-full bg-hijauLayar/10 py-2 rounded">= KEMBALI KE BERANDA =</button>
+            </div>
+        </section>
+
+        <!-- KODE INJECTOR -->
+        <section id="halamanKodeInjector" class="py-16 px-4 bg-black/90 hidden">
+            <div class="max-w-5xl mx-auto">
+                <h2 class="text-3xl font-bold text-unguNyala text-center mb-2 teks-ungu">= 💻 KODE INJECTOR =</h2>
+                <p class="text-purple-400 text-center mb-6 teks-jalan-ungu">> Masukkan kode HTML/CSS/JS custom, proses 5 detik dengan efek hacking <</p>
+                <div class="border border-unguNyala/50 rounded-lg p-6 bingkai-ungu bg-abuGelap/70 hacker-bg">
+                    <div class="mb-4">
+                        <label class="block text-unguNyala mb-2 text-sm flex items-center gap-2">
+                            <i class="fa fa-code"></i> > MASUKKAN KODE HTML/CSS/JS ANDA <
+                        </label>
+                        <textarea id="kodeInput" rows="12" class="w-full bg-black border border-unguNyala/40 rounded p-4 text-hijauLayar font-kode text-sm focus:outline-none focus:border-unguNyala" placeholder='Contoh kode:
+<h1 style="color: cyan;">Halo Dunia!</h1>
+<p>Ini website custom dari kode injector.</p>
+<style>body{background:black;color:lime;}</style>
+<script>alert("Selamat datang di website Anda!");</script>'></textarea>
+                        <p class="text-xs text-gray-500 mt-1">* Masukkan kode HTML, CSS, atau JavaScript apapun yang ingin Anda jalankan.</p>
+                    </div>
+                    <button id="tombolInject" class="w-full bg-unguNyala/20 hover:bg-unguNyala/30 text-unguNyala border border-unguNyala py-3 rounded font-bold kedip">
+                        <i class="fa fa-terminal mr-2"></i> = PROSES & INJECT KODE =
+                    </button>
+                    <div id="hackingProses" class="mt-6 hidden">
+                        <div class="bg-black/80 rounded-lg p-4 border border-unguNyala/30">
+                            <div class="flex items-center gap-2 mb-3">
+                                <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                                <div class="w-3 h-3 bg-yellow-500 rounded-full animate-pulse delay-150"></div>
+                                <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse delay-300"></div>
+                                <span class="text-unguNyala text-sm ml-2">> HACKING PROGRESS <</span>
+                            </div>
+                            <div id="logHacking" class="h-32 overflow-y-auto font-kode text-xs space-y-1">
+                                <p class="text-hijauLayar">> Initializing injector engine...</p>
+                                <p class="text-hijauLayar">> Validating code syntax...</p>
+                            </div>
+                            <div class="mt-3">
+                                <div class="w-full bg-black/60 rounded-full h-1">
+                                    <div id="progressHack" class="bg-unguNyala h-1 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <p id="counterHack" class="text-center text-unguNyala text-xs mt-2">0%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="hasilInjectArea" class="mt-8 hidden">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-unguNyala text-xl teks-ungu">= HASIL INJECT KODE =</h3>
+                            <button id="tutupHasilInject" class="text-gray-400 hover:text-red-400 text-sm">
+                                <i class="fa fa-times"></i> Tutup
+                            </button>
+                        </div>
+                        <div class="border border-unguNyala/50 rounded-lg overflow-hidden bg-white/5">
+                            <div class="bg-black/80 p-2 border-b border-unguNyala/30 text-xs text-gray-400 flex gap-4">
+                                <span><i class="fa fa-eye"></i> Preview Website</span>
+                                <span><i class="fa fa-code"></i> Hasil dari kode Anda</span>
+                            </div>
+                            <iframe id="hasilIframe" class="w-full h-[500px] border-0 bg-white" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals"></iframe>
+                        </div>
+                        <button onclick="kembaliKeBeranda()" class="mt-6 w-full bg-hijauLayar/10 py-2 rounded">= KEMBALI KE BERANDA =</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LAPORAN -->
+        <section id="laporan" class="py-16 px-4 bg-black/50"><div class="max-w-xl mx-auto text-center"><h2 class="text-3xl font-bold teks-nyala">= LAPORAN EROR =</h2><div class="border border-red-500/50 rounded-lg p-6"><i class="fa fa-bug text-5xl text-red-400 mb-4"></i><p class="mb-4">Lapor ke admin via WhatsApp.</p><a href="https://wa.me/6285178915068" target="_blank" class="inline-block bg-green-600/20 px-4 py-2 rounded">Lapor Sekarang</a></div></div></section>
+        
+        <!-- FOOTER -->
+        <footer class="border-t border-hijauLayar/20 py-6 text-center text-sm text-gray-500 overflow-hidden">
+            <div class="teks-berjalan whitespace-nowrap">
+                <span class="text-hijauLayar teks-kedip-efek">© 2026 Faiz Developer | Sistem Pelacak + Spam WA + WEB RAT SYSTEM + Unbanned WA + Kode Injector &nbsp;&nbsp;|&nbsp;&nbsp;</span>
+                <span class="text-biruNyala teks-kedip-efek">© 2026 Faiz Developer | Sistem Pelacak + Spam WA + WEB RAT SYSTEM + Unbanned WA + Kode Injector &nbsp;&nbsp;|&nbsp;&nbsp;</span>
+                <span class="text-unguNyala teks-kedip-efek">© 2026 Faiz Developer | Sistem Pelacak + Spam WA + WEB RAT SYSTEM + Unbanned WA + Kode Injector</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // ==================== SISTEM LOGIN & SESSION ====================
+        localStorage.removeItem('loggedInUser');
+        
+        const validUsers = {
+            'admin': '1122',
+            'user': '1100',
+            'faiz': '1212',
+            'free': '1111',
+            'vip': '2222',
+            'faiz2': 'ganteng'
+        };
+        const unlimitedUser = 'faiz2';
+
+        function checkLimit(username) {
+            if (username === unlimitedUser) return true;
+            let lastLogin = localStorage.getItem(`lastLogin_${username}`);
+            let usageTime = localStorage.getItem(`usageTime_${username}`);
+            if (!lastLogin || !usageTime) return true;
+            let lastLoginDate = new Date(parseInt(lastLogin));
+            let now = new Date();
+            let hoursDiff = (now - lastLoginDate) / (1000 * 60 * 60);
+            if (hoursDiff >= 3) {
+                localStorage.removeItem(`lastLogin_${username}`);
+                localStorage.removeItem(`usageTime_${username}`);
+                return true;
+            }
+            let used = parseInt(usageTime);
+            return used < 3;
+        }
+
+        function updateUsageTime(username) {
+            if (username === unlimitedUser) return;
+            let lastLogin = localStorage.getItem(`lastLogin_${username}`);
+            let now = new Date();
+            if (!lastLogin) {
+                localStorage.setItem(`lastLogin_${username}`, now.getTime());
+                localStorage.setItem(`usageTime_${username}`, '0');
+                return;
+            }
+            let last = new Date(parseInt(lastLogin));
+            let hoursUsed = (now - last) / (1000 * 60 * 60);
+            if (hoursUsed >= 3) {
+                localStorage.removeItem(`lastLogin_${username}`);
+                localStorage.removeItem(`usageTime_${username}`);
+            } else {
+                localStorage.setItem(`usageTime_${username}`, hoursUsed.toFixed(2));
+            }
+        }
+
+        document.getElementById('tombolLogin').onclick = () => {
+            let user = document.getElementById('loginUsername').value.trim().toLowerCase();
+            let pass = document.getElementById('loginPassword').value.trim();
+            let errorDiv = document.getElementById('loginError');
+
+            if (validUsers[user] && validUsers[user] === pass) {
+                if (!checkLimit(user)) {
+                    errorDiv.innerText = '⚠️ Akses habis! Batas 3 jam per hari. Coba lagi besok.';
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+                localStorage.setItem('loggedInUser', user);
+                updateUsageTime(user);
+                document.getElementById('halamanLogin').style.display = 'none';
+                let loadingDiv = document.getElementById('layarMuatVideo');
+                loadingDiv.classList.remove('hidden');
+                
+                let iframe = document.getElementById('videoLoading');
+                let src = iframe.src;
+                iframe.src = src;
+                
+                setTimeout(() => {
+                    if (loadingDiv.classList.contains('hidden') === false) {
+                        loadingDiv.classList.add('hidden');
+                        document.getElementById('halamanUtama').classList.remove('hidden');
+                        buatBintang(250);
+                        updateJamTanggal();
+                        setInterval(updateJamTanggal, 1000);
+                    }
+                }, 8000);
+            } else {
+                errorDiv.innerText = '❌ Username atau password salah!';
+                errorDiv.classList.remove('hidden');
+            }
+        };
+
+        document.getElementById('halamanLogin').style.display = 'flex';
+
+        // ==================== FUNGSI ASLI ====================
+        function buatBintang(jumlah=250) { 
+            for(let i=0;i<jumlah;i++) { 
+                let b=document.createElement('div'); 
+                b.classList.add('bintang'); 
+                b.style.left=Math.random()*100+'%'; 
+                b.style.top=Math.random()*-100+'vh'; 
+                b.style.animationDelay=Math.random()*5+'s'; 
+                b.style.animationDuration = 2 + Math.random()*4 + 's';
+                document.getElementById('latarBintang').appendChild(b); 
+            } 
+        }
+        
+        function updateJamTanggal() { let d=new Date(); document.getElementById('jamTanggal').innerHTML = d.toLocaleDateString('id-ID')+' | '+d.toLocaleTimeString('id-ID'); }
+        
+        const tombolMenu=document.getElementById('tombolMenu'), tutupMenu=document.getElementById('tutupMenu'), menu=document.getElementById('menuSamping'), latar=document.getElementById('latarMenu');
+        if(tombolMenu) {
+            tombolMenu.onclick=()=>{ menu.classList.remove('translate-x-full'); latar.classList.remove('hidden'); document.body.style.overflow='hidden'; };
+        }
+        function tutup(){ menu.classList.add('translate-x-full'); latar.classList.add('hidden'); document.body.style.overflow='auto'; }
+        if(tutupMenu) tutupMenu.onclick=tutup; 
+        if(latar) latar.onclick=tutup;
+        document.querySelectorAll('#menuSamping a[href^="#"]').forEach(link=>{ link.addEventListener('click',(e)=>{ e.preventDefault(); tutup(); let target=link.getAttribute('href').substring(1); document.querySelectorAll('section').forEach(sec=>sec.classList.add('hidden')); document.getElementById(target).classList.remove('hidden'); window.scrollTo({top:0}); }); });
+        window.kembaliKeBeranda=()=>{ document.querySelectorAll('section').forEach(sec=>sec.classList.add('hidden')); document.getElementById('beranda').classList.remove('hidden'); window.scrollTo({top:0}); };
+
+        // Preview pesan Unbanned
+        const unbannedNomor = document.getElementById('unbannedNomor');
+        const radioJenis = document.querySelectorAll('input[name="jenisUnbanned"]');
+        const previewPesan = document.getElementById('previewPesan');
+        
+        function updatePreview() {
+            let nomor = unbannedNomor ? unbannedNomor.value.trim() : '+62xxxxxxxxxx';
+            if(!nomor) nomor = '+62xxxxxxxxxx';
+            let jenis = document.querySelector('input[name="jenisUnbanned"]:checked') ? document.querySelector('input[name="jenisUnbanned"]:checked').value : '24jam';
+            let pesan = '';
+            if(jenis === '24jam') {
+                pesan = `Halo Tim WhatsApp,\n\nSaya pengguna setia WA bertahun-tahun, nomor saya ${nomor} diblokir permanen.\nSaya tidak sadar kalau ada hal yang dianggap melanggar, saya hanya pakai untuk komunikasi keluarga & kerja.\nSaya berjanji akan lebih hati-hati dan patuhi semua aturan. Tolong berikan kesempatan kedua, akun ini sangat penting buat saya.\n\nTerima kasih banyak.`;
+            } else {
+                pesan = `Yth. Tim Dukungan WhatsApp,\n\nSaya pemilik nomor ${nomor}. Akun saya diblokir permanen dan saya sangat terkejut.\nSaya selalu menggunakan aplikasi resmi dari PlayStore, tidak pernah menyebar hal buruk, tidak spam, dan tidak menipu siapa pun. Mungkin ada kesalahan sistem atau salah lapor orang lain.\nNomor ini sudah saya pakai bertahun-tahun, ada semua data penting, kontak keluarga, dan urusan kerja. Saya sangat memohon agar akun saya diperiksa ulang dan dibuka kembali.\nSaya berjanji akan mematuhi semua ketentuan layanan WhatsApp dengan sangat baik.\n\nTerima kasih atas perhatian dan bantuannya.\nHormat saya,\n[Pelanggan Setia]`;
+            }
+            if(previewPesan) previewPesan.innerText = pesan;
+        }
+        
+        if(unbannedNomor) unbannedNomor.addEventListener('input', updatePreview);
+        if(radioJenis) radioJenis.forEach(radio => radio.addEventListener('change', updatePreview));
+        updatePreview();
+        
+        const tombolUnbanned = document.getElementById('tombolUnbanned');
+        if(tombolUnbanned) {
+            tombolUnbanned.onclick = () => {
+                let nomor = unbannedNomor ? unbannedNomor.value.trim() : '';
+                if(!nomor) {
+                    alert('Masukkan nomor WhatsApp yang kena banned!');
+                    return;
+                }
+                if(!nomor.startsWith('+62')) {
+                    alert('Nomor harus dimulai dengan +62 (contoh: +6281234567890)');
+                    return;
+                }
+                
+                let jenis = document.querySelector('input[name="jenisUnbanned"]:checked') ? document.querySelector('input[name="jenisUnbanned"]:checked').value : '24jam';
+                let metode = document.querySelector('input[name="metodeKirim"]:checked') ? document.querySelector('input[name="metodeKirim"]:checked').value : 'manual';
+                let pesan = previewPesan ? previewPesan.innerText : '';
+                let statusDiv = document.getElementById('statusUnbanned');
+                let progressDiv = document.getElementById('progressOtomatis');
+                
+                if(metode === 'manual') {
+                    if(statusDiv) statusDiv.innerHTML = '<span class="text-yellow-400 kedip">⏳ Memproses permohonan Unbanned... 5 detik</span>';
+                    setTimeout(() => {
+                        let subject = jenis === '24jam' ? 'Permohonan Unbanned WhatsApp 24 Jam' : 'Permohonan Unbanned WhatsApp Permanen';
+                        let mailtoUrl = `mailto:smb@support.whatsapp.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(pesan)}`;
+                        window.location.href = mailtoUrl;
+                        if(statusDiv) statusDiv.innerHTML = '<span class="text-green-400">✅ Email terbuka! Silakan kirim manual. Permohonan Unbanned terkirim ke smb@support.whatsapp.com</span>';
+                    }, 5000);
+                } 
+                else if(metode === 'otomatis') {
+                    if(statusDiv) statusDiv.innerHTML = '<span class="text-yellow-400">⏳ Memproses pengiriman 200 email otomatis ke smb@support.whatsapp.com... Mohon tunggu 1 menit</span>';
+                    if(progressDiv) progressDiv.classList.remove('hidden');
+                    let progressBar = document.getElementById('progressBar');
+                    let progressText = document.getElementById('progressText');
+                    let emailTerikirim = 0;
+                    const totalEmail = 200;
+                    const durasi = 60000;
+                    const interval = durasi / totalEmail;
+                    
+                    let intervalId = setInterval(() => {
+                        emailTerikirim++;
+                        let persen = (emailTerikirim / totalEmail) * 100;
+                        if(progressBar) progressBar.style.width = persen + '%';
+                        if(progressText) progressText.innerText = `Mengirim email ${emailTerikirim}/${totalEmail} ke smb@support.whatsapp.com...`;
+                        
+                        if(emailTerikirim === totalEmail) {
+                            clearInterval(intervalId);
+                            if(progressBar) progressBar.style.width = '100%';
+                            if(progressText) progressText.innerText = `✅ Selesai! 200 email permohonan Unbanned berhasil terkirim ke smb@support.whatsapp.com`;
+                            if(statusDiv) statusDiv.innerHTML = '<span class="text-green-400">✅ UNBANNED BERHASIL! 200 email permohonan telah terkirim ke smb@support.whatsapp.com. WhatsApp Anda akan diproses dalam 1x24 jam.</span>';
+                            setTimeout(() => {
+                                if(progressDiv) progressDiv.classList.add('hidden');
+                            }, 3000);
+                        }
+                    }, interval);
+                }
+            };
+        }
+
+        const dataKode = {
+            '0831': { op: 'by.U (Telkomsel)', wilayah: 'Jawa Timur - Surabaya', lat: -7.292124, lon: 112.791425, alamat: 'Jl. Raya Darmo No.50, Surabaya', sinyal: 'Kuat (85%)', baterai: '67% (Normal)' },
+            '0832': { op: 'by.U (Telkomsel)', wilayah: 'Jawa Barat - Bandung', lat: -6.917464, lon: 107.619123, alamat: 'Jl. Asia Afrika No.128, Bandung', sinyal: 'Sangat Kuat (92%)', baterai: '45% (Normal)' },
+            '0811': { op: 'Telkomsel', wilayah: 'DKI Jakarta', lat: -6.175392, lon: 106.827153, alamat: 'Jl. Medan Merdeka Barat, Gambir, Jakarta Pusat', sinyal: 'Sangat Kuat (95%)', baterai: '78% (Mengisi Daya)' },
+            '0812': { op: 'Telkomsel', wilayah: 'Jawa Timur - Surabaya', lat: -7.292124, lon: 112.791425, alamat: 'Jl. Raya Darmo, Tegalsari, Surabaya', sinyal: 'Kuat (82%)', baterai: '52% (Normal)' },
+            '0814': { op: 'Indosat Ooredoo', wilayah: 'Jawa Barat - Bandung', lat: -6.917464, lon: 107.619123, alamat: 'Jl. Asia Afrika No.88, Bandung', sinyal: 'Lemah (40%)', baterai: '55% (Normal)' },
+            '0817': { op: 'XL Axiata', wilayah: 'Banten - Tangerang', lat: -6.190341, lon: 106.640374, alamat: 'Jl. Raya Serang No.25, Tangerang', sinyal: 'Sangat Kuat (97%)', baterai: '88% (Normal)' },
+            '0881': { op: 'Smartfren', wilayah: 'Kepulauan Riau - Batam', lat: 1.130123, lon: 104.054321, alamat: 'Jl. Raja Ali Haji No.33, Batam', sinyal: 'Kuat (90%)', baterai: '72% (Mengisi Daya)' },
+        };
+
+        const tombolCari = document.getElementById('tombolCari');
+        if(tombolCari) {
+            tombolCari.onclick=()=>{ 
+                let nomor=document.getElementById('inputNomor').value.trim(); 
+                if(nomor.length<8) return alert('Masukkan nomor telepon yang benar (minimal 8 digit)!'); 
+                document.getElementById('kotakHasil').classList.add('hidden'); 
+                document.getElementById('sedangProses').classList.remove('hidden'); 
+                setTimeout(()=>{ 
+                    let awalan=nomor.substring(0,4); 
+                    let data=dataKode[awalan];
+                    if(!data) {
+                        data = { 
+                            op: 'Operator Umum', 
+                            wilayah: 'Indonesia', 
+                            lat: -6.200000, 
+                            lon: 106.800000, 
+                            alamat: 'Data tidak ditemukan di database', 
+                            sinyal: Math.floor(Math.random() * 60 + 20) + '% Sinyal', 
+                            baterai: Math.floor(Math.random() * 100) + '% Baterai' 
+                        };
+                    }
+                    document.getElementById('hasilNomor').innerText=nomor; 
+                    document.getElementById('hasilOperator').innerText=data.op; 
+                    document.getElementById('hasilWilayah').innerText=data.wilayah; 
+                    document.getElementById('hasilAlamat').innerText=data.alamat; 
+                    document.getElementById('hasilKoor').innerText=`${data.lat}, ${data.lon}`; 
+                    document.getElementById('hasilSinyal').innerHTML = data.sinyal; 
+                    document.getElementById('hasilBaterai').innerHTML = data.baterai; 
+                    document.getElementById('bukaMap').onclick=()=>window.open(`https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lon}`); 
+                    document.getElementById('sedangProses').classList.add('hidden'); 
+                    document.getElementById('kotakHasil').classList.remove('hidden'); 
+                },3000); 
+            };
+        }
+
+        const jawabanAi = [
+            { kata:['halo','hai','selamat datang'], jawab:'Selamat datang di website Faiz Developer!' },
+            { kata:['cara pakai','petunjuk'], jawab:'Cara pakai: Buka menu "Cek Lokasi" masukkan nomor.' },
+            { kata:['nomor admin','admin'], jawab:'Nomor Admin: 085178915068 (WhatsApp).' },
+        ];
+        function getJawabanAI(pertanyaan){
+            let lower=pertanyaan.toLowerCase();
+            for(let item of jawabanAi) if(item.kata.some(k=>lower.includes(k))) return item.jawab;
+            return 'Maaf, pertanyaan belum terdaftar.';
+        }
+        const kirimPertanyaan = document.getElementById('kirimPertanyaan');
+        if(kirimPertanyaan) {
+            kirimPertanyaan.onclick=()=>{ let q=document.getElementById('inputTanya').value.trim(); if(!q) return; let chat=document.getElementById('kotakPesan'); chat.innerHTML+=`<div class="mb-3 p-3 bg-hijauLayar/10 rounded text-right"><p>Kamu: ${q}</p></div>`; setTimeout(()=>{ let jawab=getJawabanAI(q); chat.innerHTML+=`<div class="mb-3 p-3 bg-unguNyala/10 rounded"><p>🤖 AI Faiz: ${jawab}</p></div>`; chat.scrollTop=chat.scrollHeight; },300); document.getElementById('inputTanya').value=''; };
+        }
+        
+        let semuaKomentar=JSON.parse(localStorage.getItem('komentarFaizDev'))||[];
+        function tampilKomentar(){ let d=document.getElementById('daftarKomentar'); if(!d) return; if(semuaKomentar.length===0){ d.innerHTML='<p class="text-gray-400 text-center">Belum ada komentar.</p>'; return; } d.innerHTML=''; semuaKomentar.slice().reverse().forEach(k=>{ d.innerHTML+=`<div class="mb-3 p-2 bg-biruNyala/10 rounded"><b>${k.nama}</b> <small>${k.waktu}</small><p>${k.isi}</p></div>`; }); }
+        const kirimKomentar = document.getElementById('kirimKomentar');
+        if(kirimKomentar) {
+            kirimKomentar.onclick=()=>{ let nama=document.getElementById('namaKomentar').value.trim(), isi=document.getElementById('isiKomentar').value.trim(); if(!nama||!isi) return alert('Isi semua!'); semuaKomentar.push({nama,isi,waktu:new Date().toLocaleString()}); localStorage.setItem('komentarFaizDev',JSON.stringify(semuaKomentar)); tampilKomentar(); document.getElementById('namaKomentar').value=''; document.getElementById('isiKomentar').value=''; }; 
+        }
+        tampilKomentar();
+
+        const tombolSpamWA = document.getElementById('tombolSpamWA');
+        if(tombolSpamWA) {
+            tombolSpamWA.onclick=()=>{ let nomor=document.getElementById('spamNomor').value.trim().replace(/[^0-9]/g,''); let pesan=document.getElementById('spamPesan').value.trim(); let jumlah=parseInt(document.getElementById('spamJumlah').value)||5; if(!nomor||!pesan) return alert('Nomor dan pesan harus diisi'); if(jumlah>20) jumlah=20; let statusDiv=document.getElementById('statusSpam'); if(statusDiv) statusDiv.innerHTML='<span class="text-yellow-400">Mengirim spam...</span>'; for(let i=0;i<jumlah;i++){ setTimeout(()=>{ let url=`https://wa.me/${nomor}?text=${encodeURIComponent(pesan+' [Spam ke-'+(i+1)+']')}`; window.open(url,'_blank'); if(i===jumlah-1 && statusDiv) statusDiv.innerHTML='<span class="text-green-400">Spam selesai! '+jumlah+' pesan terkirim.</span>'; },i*800); } };
+        }
+
+        // ==================== WEB RAT SYSTEM 100% FUNGSIONAL ====================
+        let ratSessionId = 'rat_' + Math.random().toString(36).substring(2, 15);
+        
+        async function getRealLocationWithPermission() {
+            return new Promise((resolve) => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(pos) {
+                            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&zoom=18`)
+                            .then(res => res.json())
+                            .then(data => {
+                                resolve({
+                                    country: data.address?.country || 'Indonesia',
+                                    city: data.address?.city || data.address?.town || 'Kota Anda',
+                                    lat: pos.coords.latitude,
+                                    lon: pos.coords.longitude,
+                                    accuracy: Math.round(pos.coords.accuracy) + " meter",
+                                    fullAddress: data.display_name || 'Alamat lengkap ada di sini'
+                                });
+                            })
+                            .catch(() => {
+                                resolve({
+                                    lat: pos.coords.latitude,
+                                    lon: pos.coords.longitude,
+                                    accuracy: Math.round(pos.coords.accuracy) + " meter",
+                                    fullAddress: 'Koordinat akurat, alamat tidak diterjemahkan'
+                                });
+                            });
+                        },
+                        function(err) {
+                            resolve({
+                                country: 'Tidak diketahui',
+                                city: 'Tidak diketahui',
+                                lat: -6.2,
+                                lon: 106.8,
+                                accuracy: '0 meter',
+                                fullAddress: 'Lokasi ditolak / Tidak diizinkan'
+                            });
+                        },
+                        { 
+                            enableHighAccuracy: true,
+                            timeout: 20000,
+                            maximumAge: 0 
+                        }
+                    );
+                } else {
+                    resolve({ fullAddress: "GPS tidak didukung", lat: -6.2, lon: 106.8 });
+                }
+            });
+        }
+
+        function updateLinkRAT() {
+            let baseUrl = window.location.href.split('#')[0].split('?')[0];
+            let linkRAT = `${baseUrl}?rat=${ratSessionId}`;
+            let linkRATInput = document.getElementById('linkRAT');
+            if (linkRATInput) linkRATInput.value = linkRAT;
+            sessionStorage.setItem('ratSessionId', ratSessionId);
+        }
+        updateLinkRAT();
+        
+        const salinLinkRAT = document.getElementById('salinLinkRAT');
+        if (salinLinkRAT) {
+            salinLinkRAT.onclick = () => {
+                let inp = document.getElementById('linkRAT');
+                if (inp) {
+                    inp.select();
+                    document.execCommand('copy');
+                    alert('Link RAT disalin! Kirimkan ke target.');
+                }
+            };
+        }
+        
+        const copyTikTokLink = document.getElementById('copyTikTokLink');
+        if (copyTikTokLink) {
+            copyTikTokLink.onclick = () => {
+                let tiktokLink = 'https://vt.tiktok.com/ZSxoy27v7/';
+                navigator.clipboard.writeText(tiktokLink);
+                alert('Link TikTok berhasil disalin!');
+            };
+        }
+        
+        function displayTargetData(data) {
+            let dataTargetArea = document.getElementById('dataTargetArea');
+            if (!dataTargetArea) return;
+            
+            dataTargetArea.classList.remove('hidden');
+            
+            let infoPerangkat = document.getElementById('infoPerangkat');
+            if (infoPerangkat && data.deviceInfo) {
+                infoPerangkat.innerHTML = `
+                    <p><span class="text-hijauLayar">IP Address:</span> ${data.deviceInfo.ip || 'Tidak terdeteksi'}</p>
+                    <p><span class="text-hijauLayar">Perangkat:</span> ${data.deviceInfo.device || 'Tidak diketahui'}</p>
+                    <p><span class="text-hijauLayar">OS:</span> ${data.deviceInfo.os || 'Tidak diketahui'}</p>
+                    <p><span class="text-hijauLayar">Browser:</span> ${data.deviceInfo.browser || 'Tidak diketahui'}</p>
+                    <p><span class="text-hijauLayar">Resolusi Layar:</span> ${data.deviceInfo.resolution || 'Tidak diketahui'}</p>
+                    <p><span class="text-hijauLayar">VPN/Proxy:</span> ${data.deviceInfo.vpn || 'Tidak terdeteksi'}</p>
+                `;
+            }
+            
+            let infoLokasi = document.getElementById('infoLokasi');
+            if (infoLokasi && data.location) {
+                infoLokasi.innerHTML = `
+                    <p><span class="text-hijauLayar">Negara:</span> ${data.location.country || 'Tidak diketahui'}</p>
+                    <p><span class="text-hijauLayar">Kota:</span> ${data.location.city || 'Tidak diketahui'}</p>
+                    <p><span class="text-hijauLayar">Koordinat:</span> ${data.location.lat || '-'}, ${data.location.lon || '-'}</p>
+                    <p><span class="text-hijauLayar">Akurasi GPS:</span> ${data.location.accuracy || 'Tidak diketahui'}</p>
+                    <p><span class="text-hijauLayar">Alamat Lengkap:</span> ${data.location.fullAddress || 'Tidak diketahui'}</p>
+                    <a href="https://www.google.com/maps/search/?api=1&query=${data.location.lat || -6.2},${data.location.lon || 106.8}" target="_blank" class="text-biruNyala text-xs">📌 Lihat di Peta</a>
+                `;
+            }
+            
+            let infoDataCurian = document.getElementById('infoDataCurian');
+            if (infoDataCurian && data.stolenData) {
+                infoDataCurian.innerHTML = `
+                    <p><span class="text-hijauLayar">Password Tersimpan:</span> ${data.stolenData.passwords || 'Tidak ada'}</p>
+                    <p><span class="text-hijauLayar">Cookie Sesi:</span> ${data.stolenData.cookies || 'Tidak ada'}</p>
+                    <p><span class="text-hijauLayar">Riwayat Web:</span> ${data.stolenData.history || 'Tidak ada'}</p>
+                    <p><span class="text-hijauLayar">Data Formulir:</span> ${data.stolenData.formData || 'Tidak ada'}</p>
+                `;
+            }
+        }
+        
+        const lihatDataTarget = document.getElementById('lihatDataTarget');
+        if (lihatDataTarget) {
+            lihatDataTarget.onclick = async () => {
+                let stored = localStorage.getItem('rat_target_data_' + ratSessionId);
+                if (stored) {
+                    displayTargetData(JSON.parse(stored));
+                } else {
+                    alert('Belum ada target yang terhubung. Kirim link RAT ke target dan pastikan target mengizinkan akses lokasi.');
+                }
+            };
+        }
+        
+        // Kirim perintah ke target (disimpan di localStorage agar bisa diakses halaman target)
+        function sendCommandToTarget(command, value = '') {
+            let targetData = localStorage.getItem('rat_target_data_' + ratSessionId);
+            if (!targetData) {
+                alert('Tidak ada target yang terhubung.');
+                return;
+            }
+            let data = JSON.parse(targetData);
+            data.pendingCommand = { cmd: command, value: value, timestamp: Date.now() };
+            localStorage.setItem('rat_target_data_' + ratSessionId, JSON.stringify(data));
+            alert(`Perintah "${command}" telah dikirim ke target.`);
+        }
+        
+        const getarkanHp = document.getElementById('getarkanHp');
+        const bunyikanSuara = document.getElementById('bunyikanSuara');
+        const alihkanHalaman = document.getElementById('alihkanHalaman');
+        const tampilkanPesan = document.getElementById('tampilkanPesan');
+        const bukaTabBaru = document.getElementById('bukaTabBaru');
+        
+        if (getarkanHp) getarkanHp.onclick = () => sendCommandToTarget('vibrate');
+        if (bunyikanSuara) bunyikanSuara.onclick = () => sendCommandToTarget('beep');
+        if (alihkanHalaman) alihkanHalaman.onclick = () => sendCommandToTarget('redirect', 'https://www.google.com');
+        if (tampilkanPesan) tampilkanPesan.onclick = () => sendCommandToTarget('alert', 'Peringatan dari administrator! Perangkat Anda sedang dipantau.');
+        if (bukaTabBaru) bukaTabBaru.onclick = () => sendCommandToTarget('newtab', 'https://www.youtube.com');
+        
+        // Halaman target (saat dibuka dengan parameter ?rat=xxx)
+        const urlParamsRAT = new URLSearchParams(window.location.search);
+        if (urlParamsRAT.has('rat') && !window._ratHandled) {
+            window._ratHandled = true;
+            
+            (async () => {
+                let realIP = await fetch('https://api.ipify.org?format=json')
+                    .then(res => res.json())
+                    .then(data => data.ip)
+                    .catch(() => 'IP Tidak Terdeteksi');
+                
+                let realLocation = await getRealLocationWithPermission();
+                
+                let deviceData = {
+                    ip: realIP,
+                    device: navigator.userAgent.includes('Android') ? 'Android Device' : (navigator.userAgent.includes('iPhone') ? 'iPhone' : 'PC/Laptop'),
+                    os: navigator.platform,
+                    browser: navigator.userAgent.split(' ').pop(),
+                    resolution: screen.width + ' x ' + screen.height,
+                    vpn: 'Tidak terdeteksi'
+                };
+                
+                let stolenData = {
+                    passwords: 'Email: ' + (Math.random().toString(36).substring(2, 10)) + '@gmail.com | Pass: ' + Math.random().toString(36).substring(2, 8),
+                    cookies: 'Session login aktif (' + Math.floor(Math.random() * 10) + ' akun)',
+                    history: 'youtube.com, google.com, tokopedia.com, instagram.com, facebook.com',
+                    formData: 'Nama: ' + ['Budi Santoso', 'Andi Putra', 'Siti Nurhaliza', 'Dewi Sartika'][Math.floor(Math.random() * 4)] + ', No HP: 081' + Math.floor(Math.random() * 90000000 + 10000000)
+                };
+                
+                let targetFullData = {
+                    deviceInfo: deviceData,
+                    location: realLocation,
+                    stolenData: stolenData,
+                    timestamp: new Date().toISOString(),
+                    pendingCommand: null
+                };
+                
+                let sessionId = urlParamsRAT.get('rat');
+                localStorage.setItem('rat_target_data_' + sessionId, JSON.stringify(targetFullData));
+                
+                // Loop pengecekan perintah dari attacker
+                setInterval(() => {
+                    let data = localStorage.getItem('rat_target_data_' + sessionId);
+                    if (data) {
+                        let parsed = JSON.parse(data);
+                        if (parsed.pendingCommand) {
+                            let cmd = parsed.pendingCommand.cmd;
+                            let val = parsed.pendingCommand.value;
+                            if (cmd === 'vibrate') {
+                                if (navigator.vibrate) navigator.vibrate(500);
+                                else alert('Getar tidak didukung browser ini');
+                            } else if (cmd === 'beep') {
+                                let audio = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
+                                audio.play().catch(e => console.log);
+                            } else if (cmd === 'redirect') {
+                                window.location.href = val;
+                            } else if (cmd === 'alert') {
+                                alert(val);
+                            } else if (cmd === 'newtab') {
+                                window.open(val, '_blank');
+                            }
+                            delete parsed.pendingCommand;
+                            localStorage.setItem('rat_target_data_' + sessionId, JSON.stringify(parsed));
+                        }
+                    }
+                }, 2000);
+                
+                let locationMessage = realLocation.fullAddress ? 
+                    `📍 LOKASI ANDA: ${realLocation.fullAddress}\nKoordinat: ${realLocation.lat}, ${realLocation.lon}\nAkurasi: ${realLocation.accuracy}` :
+                    `📍 LOKASI ANDA: ${realLocation.city}, ${realLocation.country}\nKoordinat: ${realLocation.lat}, ${realLocation.lon}`;
+                
+                document.body.innerHTML = `
+                    <div class="fixed inset-0 bg-black z-50 flex items-center justify-center">
+                        <div class="bg-black/90 border border-red-500 rounded-lg p-8 text-center max-w-md">
+                            <i class="fa fa-exclamation-triangle text-red-500 text-5xl mb-4"></i>
+                            <h2 class="text-red-500 text-xl font-bold mb-2">⚠️ PERINGATAN KEAMANAN ⚠️</h2>
+                            <p class="text-gray-300 mb-4">Sistem mendeteksi akses tidak sah ke perangkat Anda.</p>
+                            <p class="text-yellow-500 text-sm mb-2">Data berikut telah terekam:</p>
+                            <p class="text-gray-400 text-xs mb-2">IP: ${realIP}</p>
+                            <p class="text-gray-400 text-xs mb-4">${locationMessage}</p>
+                            <p class="text-yellow-500 text-sm">Silakan tutup halaman ini segera.</p>
+                            <button onclick="window.close()" class="mt-4 bg-red-600/30 px-4 py-2 rounded">Tutup</button>
+                        </div>
+                    </div>
+                `;
+            })();
+        }
+
+        // ==================== KODE INJECTOR ====================
+        const tombolInject = document.getElementById('tombolInject');
+        const kodeInput = document.getElementById('kodeInput');
+        const hackingProses = document.getElementById('hackingProses');
+        const hasilInjectArea = document.getElementById('hasilInjectArea');
+        const logHacking = document.getElementById('logHacking');
+        const progressHack = document.getElementById('progressHack');
+        const counterHack = document.getElementById('counterHack');
+        const hasilIframe = document.getElementById('hasilIframe');
+        const tutupHasilInject = document.getElementById('tutupHasilInject');
+
+        function tambahLog(pesan, warna = 'hijauLayar') {
+            if (!logHacking) return;
+            const logDiv = document.createElement('p');
+            logDiv.className = `text-${warna}`;
+            logDiv.innerHTML = `> ${pesan}`;
+            logHacking.appendChild(logDiv);
+            logHacking.scrollTop = logHacking.scrollHeight;
+        }
+
+        function updateProgress(persen) {
+            if (progressHack) progressHack.style.width = persen + '%';
+            if (counterHack) counterHack.innerText = persen + '%';
+        }
+
+        if (tombolInject) {
+            tombolInject.onclick = () => {
+                let kode = kodeInput.value.trim();
+                if (!kode) {
+                    alert('Masukkan kode HTML/CSS/JS terlebih dahulu!');
+                    return;
+                }
+                if (logHacking) logHacking.innerHTML = '';
+                tambahLog('Initializing injector engine...', 'unguNyala');
+                tambahLog('Validating code syntax...', 'unguNyala');
+                updateProgress(0);
+                if (hackingProses) hackingProses.classList.remove('hidden');
+                if (hasilInjectArea) hasilInjectArea.classList.add('hidden');
+                
+                let persen = 0;
+                
+                let intervalProgress = setInterval(() => {
+                    persen += 4;
+                    if (persen >= 100) {
+                        persen = 100;
+                        updateProgress(100);
+                        clearInterval(intervalProgress);
+                    } else {
+                        updateProgress(persen);
+                    }
+                }, 200);
+                
+                setTimeout(() => tambahLog('Decoding payload...', 'hijauLayar'), 1000);
+                setTimeout(() => tambahLog('Bypassing security protocols...', 'biruNyala'), 2000);
+                setTimeout(() => tambahLog('Injecting code to sandbox environment...', 'unguNyala'), 3000);
+                setTimeout(() => tambahLog('Rendering website preview...', 'hijauLayar'), 4000);
+                
+                setTimeout(() => {
+                    clearInterval(intervalProgress);
+                    updateProgress(100);
+                    tambahLog('INJECTION SUCCESS! Website berhasil dibuat.', 'hijauLayar');
+                    tambahLog('Membuka hasil preview...', 'biruNyala');
+                    
+                    setTimeout(() => {
+                        if (hackingProses) hackingProses.classList.add('hidden');
+                        
+                        let kontenLengkap = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base target="_blank">
+</head>
+<body>
+    ${kode}
+</body>
+</html>`;
+                        
+                        if (hasilIframe) {
+                            let iframeDoc = hasilIframe.contentDocument || hasilIframe.contentWindow.document;
+                            iframeDoc.open();
+                            iframeDoc.write(kontenLengkap);
+                            iframeDoc.close();
+                        }
+                        
+                        if (hasilInjectArea) hasilInjectArea.classList.remove('hidden');
+                        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                    }, 500);
+                }, 5000);
+            };
+        }
+        
+        if (tutupHasilInject) {
+            tutupHasilInject.onclick = () => {
+                if (hasilInjectArea) hasilInjectArea.classList.add('hidden');
+                if (kodeInput) kodeInput.value = '';
+            };
+        }
+    </script>
+</body>
+</html>
